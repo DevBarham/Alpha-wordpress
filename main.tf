@@ -16,6 +16,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "template_file" "alpha-wordpress" {
+  template = file("wordpress.tpl")
+  vars = {
+    db   = var.db
+    user = var.user
+    pass = var.pass
+    theme = var.theme
+  }
+}
+
 # # Data source declaration for all necessary fetch
 # data "aws_vpc" "default_vpc" {
 #   default = true
@@ -53,8 +63,13 @@ resource "aws_instance" "wordpress" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name      = "my-keypair"
-  user_data = base64encode("wordpress.tpl")
+  user_data = data.template_file.alpha-wordpress.rendered
   tags = {
     Name = "wordpress"
   }
+}
+
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.wordpress.public_ip
 }
