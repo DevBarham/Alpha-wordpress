@@ -28,29 +28,29 @@ provider "aws" {
 #   }
 # }
 
-# data "aws_ami" "ubuntu" {
-#   most_recent = true
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
-#   filter {
-#     name   = "name"
-#     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-#   }
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
 
-#   filter {
-#     name   = "virtualization-type"
-#     values = ["hvm"]
-#   }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 
-#   filter {
-#     name   = "root-device-type"
-#     values = ["ebs"]
-#   }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
 
-#   owners = ["099720109477"] # Canonical
-# }
+  owners = ["099720109477"] # Canonical
+}
 
 resource "aws_instance" "wordpress" {
-  ami           = "ami-0c55b159cbfafe1f0"
+  ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name      = "my-keypair"
   user_data = base64encode("wordpress.tpl")
