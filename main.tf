@@ -53,38 +53,8 @@ resource "aws_instance" "wordpress" {
   ami           = "ami-0c55b159cbfafe1f0"
   instance_type = "t2.micro"
   key_name      = "my-keypair"
-  vpc_security_group_ids = ["${aws_security_group.wordpress.id}"]
-  subnet_id     = "${aws_subnet.public.id}"
   user_data = base64encode("wordpress.tpl")
   tags = {
     Name = "wordpress"
   }
 }
-
-resource "aws_security_group" "wordpress" {
-  name_prefix = "wordpress-"
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_subnet" "public" {
-  cidr_block = "10.0.1.0/24"
-  vpc_id = aws_security_group.wordpress.vpc_id
-}
-
